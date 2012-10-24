@@ -13,20 +13,20 @@ def read_file(filename):
 
 
 setup(
-    name='django-{{ app_name }}',
-    version=__import__('{{ app_name }}').__version__,
+    name='rapidsms-broadcast',
+    version=__import__('broadcast').__version__,
     author='Caktus Consulting Group',
     author_email='solutions@caktusgroup.com',
     packages=find_packages(),
     include_package_data=True,
-    url='https://github.com/caktus/django-{{ app_name }}/',
+    url='https://github.com/caktus/rapidsms-broadcast/',
     license='BSD',
-    description=u' '.join(__import__('{{ app_name }}').__doc__.splitlines()).strip(),
+    description=u' '.join(__import__('broadcast').__doc__.splitlines()).strip(),
     classifiers=[
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
-        'Programming Language :: Python',      
+        'Programming Language :: Python',
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Framework :: Django',
