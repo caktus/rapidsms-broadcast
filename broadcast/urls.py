@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import patterns, url, url_patterns
+from django.conf.urls.defaults import patterns, url
 
 from broadcast import views
 
