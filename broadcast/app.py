@@ -60,7 +60,7 @@ class BroadcastApp(AppBase):
     thank_you = _('Thank you, your message has been queued for delivery.')
 
     def start(self):
-		self.info('started')
+        self.info('started')
 
     def _forwarding_rules(self):
         """ Returns a dictionary mapping rule keywords to rule objects """

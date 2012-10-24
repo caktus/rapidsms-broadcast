@@ -13,8 +13,11 @@ if not settings.configured:
             }
         },
         INSTALLED_APPS=(
+            'rapidsms',
+            'rapidsms.contrib.messagelog',
+            'rapidsms.contrib.scheduler',
             'broadcast',
-            'groups'
+            'groups',
         ),
         SITE_ID=1,
         SECRET_KEY='this-is-just-for-tests-so-not-that-secret',
