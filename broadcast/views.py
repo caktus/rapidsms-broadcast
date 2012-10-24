@@ -18,9 +18,9 @@ from rapidsms.contrib.messagelog.models import Message
 from broadcast.forms import BroadcastForm, ForwardingRuleForm, ReportForm,
         RecentMessageForm
 from broadcast.models import Broadcast, BroadcastMessage, ForwardingRule
-from aremind.apps.patients.models import Patient
-from aremind.apps.reminders.models import SentNotification
-from aremind.apps.wisepill.constants import WISEPILL_LOW_BATTERY
+#from aremind.apps.patients.models import Patient
+#from aremind.apps.reminders.models import SentNotification
+#from aremind.apps.wisepill.constants import WISEPILL_LOW_BATTERY
 
 
 @login_required
@@ -145,9 +145,9 @@ def dashboard(request):
     context['report_date'] = report_date
     context['report_form'] = form
     # Identify patients whose wisepill devices' batteries' levels are low, but known
-    context['low_battery_patients'] = Patient.objects.\
-              filter(batterystrength__lte=WISEPILL_LOW_BATTERY).\
-              exclude(batterystrength=-1)
+#    context['low_battery_patients'] = Patient.objects.\
+#              filter(batterystrength__lte=WISEPILL_LOW_BATTERY).\
+#              exclude(batterystrength=-1)
     # Graph data
     return render_to_response('broadcast/dashboard.html', context,
                               RequestContext(request))
@@ -181,10 +181,10 @@ def usage_report_context(start_date, end_date):
         rule_data[rule.rule_type] = data
 
     # Get patient reminder data
-    confirmed_count = SentNotification.objects.confirmed_for_range(
-        start_date, end_date).count()
-    unconfirmed_count = SentNotification.objects.unconfirmed_for_range(
-        start_date, end_date).count()
+#    confirmed_count = SentNotification.objects.confirmed_for_range(
+#        start_date, end_date).count()
+#    unconfirmed_count = SentNotification.objects.unconfirmed_for_range(
+#        start_date, end_date).count()
     total_reminders = confirmed_count + unconfirmed_count
 
     # Get total incoming/outgoing data
