@@ -1,0 +1,56 @@
+{% extends "broadcast/base.html" %}
+{% load sorting_tags pagination_tags %}
+
+{% block title %}Broadcast Schedule{% endblock %}
+
+{% block right %}
+
+{% autosort broadcasts %}
+{% autopaginate broadcasts 15 %}
+
+<div class="module">
+    <h2>Broadcast Schedule</h2>
+    <table id='broadcasts' class="sortable pagination">
+        <thead>
+            <tr>
+                <th>{% anchor id "Message ID" %}</th>
+                <th>{% anchor date "Scheduled Date" %}</th>
+                <th>{% anchor schedule_frequency Frequency %}</th>
+                <th>{% anchor body Message %}</th>
+                <th>Groups (Recipient Count)</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        {% for broadcast in broadcasts %}
+        <tr class="{% cycle 'odd' 'even' %}">
+            <td>{{ broadcast.pk }}</td>
+            <td>{{ broadcast.date|date:"m/d/y fa" }}</td>
+            <td>
+                {{ broadcast.get_schedule_frequency_display }}
+            </td>
+            <td><span title='{{ broadcast.body }}'>{{ broadcast.body|truncatewords:2 }}</span></td>
+            <td>{{ broadcast.groups.all|join:", "|truncatewords:3 }} ({{ broadcast.recipients }})</td>
+            <td class='actions'>
+                <a class='button' title='Edit broadcast #{{ broadcast.pk }}' href='{% url edit-broadcast broadcast.pk %}'><span class='ui-icon ui-icon-pencil'></span></a>
+                <a class='button' title='Delete broadcast #{{ broadcast.pk }}' href='{% url delete-broadcast broadcast.pk %}'><span class='ui-icon ui-icon-closethick'></span></a>    
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan='6'>No scheduled broadcasts</td>
+        </tr>
+        {% endfor %}
+        <tfoot>
+            {% if paginator.count > paginator.per_page %}
+            <tr>
+                <td colspan='6'>
+                    {% paginate %}
+                </td>
+            </tr>
+            {% endif %}
+        </tfoot>
+    </table>
+</div>
+
+{% endblock %}
+

@@ -1,0 +1,24 @@
+{% extends "aremind/layout-split-2.html" %}
+
+{% block javascripts %}
+    {{ block.super }}
+{% endblock %}
+
+{% block stylesheets %}
+    {{ block.super }}
+		<link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}broadcast/css/broadcast.css" />
+{% endblock %}
+
+{% block left %}
+
+<div class="module">
+    <h3>Broadcasts</h3>
+    <ul id='broadcast-nav'>
+        <li><a title="Send a Message" href="{% url send-message %}">Send a Message</a></li>
+        <li><a title="Broadcast Schedule" href="{% url broadcast-schedule %}?sort=date&dir=asc">Broadcast Schedule</a></li>
+        <li><a title="History" href="{% url broadcast-messages %}?sort=date_created">History</a></li>
+    </ul>
+</div>
+
+{% endblock %}
+

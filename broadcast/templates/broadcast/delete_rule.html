@@ -1,0 +1,27 @@
+{% extends "aremind/layout-split-2.html" %}
+{% load i18n %}
+
+{% block title %}Delete Forwarding Rule{% endblock %}
+
+{% block javascripts %}{{ block.super }}
+    <script src="{{ STATIC_URL }}js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
+    <script src="{{ STATIC_URL }}js/forms.js" type="text/javascript"></script>
+{% endblock %}
+
+{% block stylesheets %}{{ block.super }}
+    <link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}css/aremind.css" />
+{% endblock %}
+
+{% block content %}
+<div class="module">
+    <h2>Delete Forwarding Rule</h2>
+    <form method="POST" action="#" class='buttons'>
+        <p class='message'>Are you sure you want to delete Forwarding Rule #{{ rule.pk }}?</p>
+        {% csrf_token %}
+        <div class='form-action'>
+            <input type='button' name='cancel' value='Cancel' />
+            <input type='submit' name='submit' value="Delete" />
+        </div>
+    </form>
+</div>
+{% endblock %}

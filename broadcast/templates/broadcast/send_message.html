@@ -1,0 +1,43 @@
+{% extends "broadcast/base.html" %}
+
+{% block title %}{% if form.instance.pk %}Edit Broadcast{% else %}Send a Message{% endif %}{% endblock %}
+
+{% block javascripts %}
+    {{ block.super }}
+    <script src="{{ STATIC_URL }}js/jquery.NobleCount.min.js" type="text/javascript"></script>
+    <script src="{{ STATIC_URL }}js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
+    <script src="{{ STATIC_URL }}js/jquery.multiselect.min.js" type="text/javascript"></script>
+    <script src="{{ STATIC_URL }}broadcast/js/broadcast.js" type="text/javascript"></script>
+    <script src="{{ STATIC_URL }}js/forms.js" type="text/javascript"></script>
+    <script src="{{ STATIC_URL }}test_messager/js/test_messager.js" type="text/javascript"></script>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ block.super }}
+    <link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}css/jquery.multiselect.css" />
+{% endblock %}
+
+{% block right %}
+<div class="module message-form">
+    <h2>{% if form.instance.pk %}Edit Broadcast{% else %}Send a Message{% endif %}</h2>
+    <form method="POST" action="#" id="broadcast-form" class='buttons'>
+        {% csrf_token %}
+        <table>
+            {{ form }}
+        </table>
+        <div class='form-action'>
+            {% if form.instance.pk %}
+                <input type='button' name='cancel' value='Cancel' />
+                <input type='submit' name='submit' value="Save" />
+            {% else %}
+                <input type='submit' name='submit' value="Send Message" />
+            {% endif %}
+        </div>
+    </form>
+</div>
+<div class="module message-list">
+    <h2>Recent Messages</h2>
+    <a id="message-data" class="hide" href="{% url broadcast-usage-recent-messages %}"></a>    
+</div>
+{% endblock %}
+

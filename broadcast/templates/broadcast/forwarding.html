@@ -1,0 +1,65 @@
+{% extends "broadcast/base.html" %}
+{% load sorting_tags pagination_tags %}
+
+{% block title %}Forwarding Rules{% endblock %}
+
+{% block javascripts %}{{ block.super }}
+    <script src="{{ STATIC_URL }}js/forms.js" type="text/javascript"></script>
+{% endblock %}
+
+{% block stylesheets %}{{ block.super }}
+        <link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}broadcast/css/broadcast.css" />
+        <link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}css/aremind.css" />
+{% endblock %}
+
+{% block content %}
+{% autosort rules %}
+{% autopaginate rules 15 %}
+
+<div class="module">
+    <h2>Forwarding Rules</h2>
+    <p><a class='button add' title='Add Forwarding Rule' href="{% url broadcast-forwarding-create %}" >Add forwarding rule...</a></p>
+    <table id='rules' class="pagination sortable">
+        <thead>
+            <tr>
+                <th>{% anchor id "ID" %}</th>                
+                <th>{% anchor keyword Keyword %}</th>
+                <th>{% anchor source Source %}</th>
+                <th>{% anchor dest Destination %}</th>
+                <th>{% anchor message Message %}</th>
+                <th>{% anchor rule_type Type %}</th>
+                <th>{% anchor label Label %}</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        {% for rule in rules %}
+        <tr class="{% cycle 'odd' 'even' %}">
+            <td>{{ rule.id }}</td>
+            <td>{{ rule.keyword }}</td>
+            <td>{{ rule.source }}</td>
+            <td>{{ rule.dest }}</td>
+            <td>{{ rule.message }}</td>
+            <td>{{ rule.rule_type }}</td>
+            <td>{{ rule.label }}</td>
+            <td class='actions'>
+                <a class='button' title='Edit rule #{{ rule.pk }}' href='{% url broadcast-forwarding-edit rule.pk %}'><span class='ui-icon ui-icon-pencil'></span></a>
+                <a class='button' title='Delete rule #{{ rule.pk }}' href='{% url broadcast-forwarding-delete rule.pk %}'><span class='ui-icon ui-icon-closethick'></span></a>    
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan='8'>No forwarding rules</td>
+        </tr>
+        {% endfor %}
+        <tfoot>
+            {% if paginator.count > paginator.per_page %}
+            <tr>
+                <td colspan='8'>
+                    {% paginate %}
+                </td>
+            </tr>
+            {% endif %}
+        </tfoot>
+    </table>
+</div>
+{% endblock %}

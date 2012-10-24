@@ -1,0 +1,29 @@
+{% extends "aremind/layout-split-2.html" %}
+{% load i18n %}
+
+{% block title %}{% if form.instance.pk %}Edit Forwarding Rule{% else %}Create Forwarding Rule{% endif %}{% endblock %}
+
+{% block javascripts %}{{ block.super }}
+    <script src="{{ STATIC_URL }}js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
+    <script src="{{ STATIC_URL }}js/forms.js" type="text/javascript"></script>
+{% endblock %}
+
+{% block stylesheets %}{{ block.super }}
+    <link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}css/aremind.css" />
+{% endblock %}
+
+{% block content %}
+<div class="module">
+    <h2>{% if form.instance.pk %}Edit Forwarding Rule{% else %}Create Forwarding Rule{% endif %}</h2>
+    <form action="#" method="POST" class="buttons">
+        {% csrf_token %}
+        <table>
+            {{ form }}
+        </table>
+        <div class='form-action'>
+            <input type='button' name='cancel' value='Cancel' />
+            <input type='submit' name='submit' value="Save" />
+        </div>
+    </form>
+</div>
+{% endblock %}

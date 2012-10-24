@@ -1,0 +1,18 @@
+{% spaceless %}
+Usage Totals
+    Incoming Messages: {{ incoming_count }}
+    Outgoing Messages: {{ outgoing_count }}
+    Total Messages: {{ total_messages }}
+
+
+Forwarded Messages
+{% if rule_data %}{% for type, label_data in rule_data.items %}    {{ type }}
+{% for label, counts in label_data.items %}        {{ label }}: Incoming - {{ counts.0 }} Outgoing - {{ counts.1 }}
+{% endfor %}{% endfor %}{% else %}    No categorized forwarding rules.{% endif %}
+
+Appointment Reminders
+    Sent: {{ total_reminders  }}
+    Confirmed: {{ confirmed_count }}
+    Unconfirmed: {{ unconfirmed_count }}
+    Percent Confirmed: {{ confirm_percent }}%
+{% endspaceless %}

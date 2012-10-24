@@ -1,0 +1,173 @@
+[
+    {
+        "pk": 1, 
+        "model": "broadcast.dateattribute", 
+        "fields": {
+            "type": "weekday", 
+            "name": "Sunday", 
+            "value": 6
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "broadcast.dateattribute", 
+        "fields": {
+            "type": "weekday", 
+            "name": "Monday", 
+            "value": 0
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "broadcast.dateattribute", 
+        "fields": {
+            "type": "weekday", 
+            "name": "Tuesday", 
+            "value": 1
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "broadcast.dateattribute", 
+        "fields": {
+            "type": "weekday", 
+            "name": "Wednesday", 
+            "value": 2
+        }
+    }, 
+    {
+        "pk": 6, 
+        "model": "broadcast.dateattribute", 
+        "fields": {
+            "type": "weekday", 
+            "name": "Thursday", 
+            "value": 3
+        }
+    }, 
+    {
+        "pk": 7, 
+        "model": "broadcast.dateattribute", 
+        "fields": {
+            "type": "weekday", 
+            "name": "Friday", 
+            "value": 4
+        }
+    }, 
+    {
+        "pk": 8, 
+        "model": "broadcast.dateattribute", 
+        "fields": {
+            "type": "weekday", 
+            "name": "Saturday", 
+            "value": 5
+        }
+    }, 
+    {
+        "pk": 9, 
+        "model": "broadcast.dateattribute", 
+        "fields": {
+            "type": "month", 
+            "name": "January", 
+            "value": 0
+        }
+    }, 
+    {
+        "pk": 10, 
+        "model": "broadcast.dateattribute", 
+        "fields": {
+            "type": "month", 
+            "name": "February", 
+            "value": 1
+        }
+    }, 
+    {
+        "pk": 11, 
+        "model": "broadcast.dateattribute", 
+        "fields": {
+            "type": "month", 
+            "name": "March", 
+            "value": 2
+        }
+    }, 
+    {
+        "pk": 12, 
+        "model": "broadcast.dateattribute", 
+        "fields": {
+            "type": "month", 
+            "name": "April", 
+            "value": 3
+        }
+    }, 
+    {
+        "pk": 13, 
+        "model": "broadcast.dateattribute", 
+        "fields": {
+            "type": "month", 
+            "name": "May", 
+            "value": 4
+        }
+    }, 
+    {
+        "pk": 14, 
+        "model": "broadcast.dateattribute", 
+        "fields": {
+            "type": "month", 
+            "name": "June", 
+            "value": 5
+        }
+    }, 
+    {
+        "pk": 15, 
+        "model": "broadcast.dateattribute", 
+        "fields": {
+            "type": "month", 
+            "name": "July", 
+            "value": 6
+        }
+    }, 
+    {
+        "pk": 16, 
+        "model": "broadcast.dateattribute", 
+        "fields": {
+            "type": "month", 
+            "name": "August", 
+            "value": 7
+        }
+    }, 
+    {
+        "pk": 17, 
+        "model": "broadcast.dateattribute", 
+        "fields": {
+            "type": "month", 
+            "name": "September", 
+            "value": 8
+        }
+    }, 
+    {
+        "pk": 18, 
+        "model": "broadcast.dateattribute", 
+        "fields": {
+            "type": "month", 
+            "name": "October", 
+            "value": 9
+        }
+    }, 
+    {
+        "pk": 19, 
+        "model": "broadcast.dateattribute", 
+        "fields": {
+            "type": "month", 
+            "name": "November", 
+            "value": 10
+        }
+    }, 
+    {
+        "pk": 20, 
+        "model": "broadcast.dateattribute", 
+        "fields": {
+            "type": "month", 
+            "name": "December", 
+            "value": 11
+        }
+    }
+]
