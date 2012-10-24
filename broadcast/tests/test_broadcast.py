@@ -12,6 +12,7 @@ from rapidsms.tests.harness import MockRouter, MockBackend
 from rapidsms.models import Connection, Contact, Backend
 from rapidsms.messages.outgoing import OutgoingMessage
 from rapidsms.messages.incoming import IncomingMessage
+from rapidsms.router import get_router
 
 from broadcast.tests.base import CreateDataTest, FlushTestScript
 from broadcast.models import Broadcast, DateAttribute,\
@@ -20,8 +21,6 @@ from broadcast.app import BroadcastApp, scheduler_callback
 from broadcast.forms import BroadcastForm
 #from aremind.apps.patients.tests import PatientsCreateDataTest
 #from aremind.apps.wisepill.constants import WISEPILL_LOW_BATTERY
-
-from threadless_router.tests.base import SimpleRouterMixin
 
 
 class BroadcastCreateDataTest(CreateDataTest):
@@ -411,7 +410,12 @@ class BroadcastForwardingTest(BroadcastCreateDataTest):
         self.assertEqual(bc.forward, self.rule)
 
 
-class BroadcastScriptedTest(SimpleRouterMixin, BroadcastCreateDataTest):
+class BroadcastScriptedTest(BroadcastCreateDataTest):
+
+    def setUp(self):
+        super(BroadcastScriptedTest, self).setUp()
+        backends = {'mockbackend': {'ENGINE': MockBackend}}
+        self.router = get_router()(backends=backends)
 
     def test_entire_stack(self):
         contact = self.create_contact()

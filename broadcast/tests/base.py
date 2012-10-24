@@ -1,3 +1,4 @@
+import logging
 from contextlib import contextmanager
 import random
 import string
@@ -6,8 +7,10 @@ from django.core.management import call_command
 from django.db import DEFAULT_DB_ALIAS
 from django.test import TestCase
 
+from rapidsms.tests.scripted import TestScript as LegacyTestScript
+from rapidsms.tests.harness import MockBackend
+from rapidsms.router import get_router
 from rapidsms.models import Connection, Contact, Backend
-from threadless_router.tests.scripted import TestScript
 
 from groups.models import Group
 
@@ -64,7 +67,7 @@ class CreateDataTest(TestCase):
         return Group.objects.create(**defaults)
 
 
-class FlushTestScript(TestScript):
+class FlushTestScript(LegacyTestScript):
     """
     To avoid an issue related to TestCases running after TransactionTestCases,
     extend this class instead of TestScript in RapidSMS. This issue may
@@ -73,6 +76,27 @@ class FlushTestScript(TestScript):
     See this post and Karen's report here:
     http://groups.google.com/group/django-developers/browse_thread/thread/3fb1c04ac4923e90
     """
+    def setUp (self):
+        backends = {'mockbackend': {"ENGINE": MockBackend}}
+        self.router = get_router()(apps=self.apps, backends=backends)
+        self.router.join = lambda: None
+        self._init_log(logging.DEBUG)
+        self.backend = self.router.backends["mockbackend"]
+
+    def sendMessage(self, num, txt, date=None):
+        self.router.debug('sending {0} to {1}'.format(txt, num))
+        return super(TestScript, self).sendMessage(num, txt, date)
+
+    def receiveMessage(self):
+        msg = super(TestScript, self).receiveMessage()
+        self.router.debug(msg)
+        return msg
+
+    def startRouter(self):
+        pass
+
+    def stopRouter(self):
+        pass
 
     def _fixture_teardown(self):
         call_command('flush', verbosity=0, interactive=False,
