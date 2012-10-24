@@ -1,11 +1,11 @@
 /* broadcast.js
- * Javascript form functionality for aremind.apps.broadcast RapidSMS app
+ * Javascript form functionality for broadcast RapidSMS app
  */
 $(document).ready(function() {
     jQuery.ajaxSettings.traditional = true;
     $('.datetimepicker').datetimepicker();
     $('.multiselect').multiselect({header: false, selectedList: 3});
-    
+
     var span1 = $('<span>').attr('id', 'count').text(0);
     var span2 = $('<span>').text(' characters remaining');
     var counter = $('<div>').addClass('counter').append(span1).append(span2);
@@ -75,12 +75,12 @@ $(document).ready(function() {
 
     function getSelected() {
         return $('#id_groups').multiselect('getChecked').map(function(){
-            return this.value;	
+            return this.value;
         }).get();
     }
 
     queryMessages();
-    
+
     $('#id_groups').bind("multiselectclick", queryMessages);
 
     function showMessages(data) {
@@ -89,7 +89,7 @@ $(document).ready(function() {
         var list = $('<ul>').addClass('message-data');
         var groups = data.groups;
         $('.message-list .groups').remove();
-        if (groups) {            
+        if (groups) {
             $('.message-list').append($('<p>').addClass('groups').text('Sent to ' + groups));
         }
         var messages = data.messages;

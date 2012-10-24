@@ -1,15 +1,13 @@
 # vim: ai ts=4 sts=4 et sw=4
-import logging
 import datetime
-from dateutil.relativedelta import relativedelta
 from dateutil import rrule
+import logging
 
 from django.db import models
 
-from rapidsms.models import Contact, Connection
-from rapidsms.contrib.messagelog.models import Message
+from rapidsms.models import Contact
 
-from aremind.apps.groups.models import Group
+from groups.models import Group
 
 
 logger = logging.getLogger('broadcast.models')
@@ -211,7 +209,7 @@ class ForwardingRule(models.Model):
             Examples would be 'Cold Chain' or 'Staff Communication'."""
     )
     label = models.CharField(max_length=150, blank=True, null=True,
-        help_text="""Labels organize forwarding rules within their type. 
+        help_text="""Labels organize forwarding rules within their type.
             For instance you might give rules with the same source or destination a common label.
             Examples would be 'System Messages' or 'To Staff'."""
     )

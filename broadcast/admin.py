@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from aremind.apps.broadcast import models as broadcast
+from broadcast import models as broadcast
 
 
 class BroadcastAdmin(admin.ModelAdmin):

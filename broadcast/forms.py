@@ -4,9 +4,9 @@ from django import forms
 from django.forms.models import modelformset_factory
 from django.utils.dates import MONTHS
 
-from aremind.apps.broadcast.models import Broadcast, ForwardingRule
-from aremind.apps.broadcast.validators import validate_keyword
-from aremind.apps.groups.models import Group
+from broadcast.models import Broadcast, ForwardingRule
+from broadcast.validators import validate_keyword
+from groups.models import Group
 
 
 class BroadcastForm(forms.ModelForm):
@@ -48,7 +48,7 @@ class BroadcastForm(forms.ModelForm):
         choices = list(Broadcast.REPEAT_CHOICES)
         choices.pop(0)
         self.fields['schedule_frequency'].choices = choices
-        self.fields.keyOrder = ('when', 'date', 'schedule_frequency', 
+        self.fields.keyOrder = ('when', 'date', 'schedule_frequency',
                                 'schedule_end_date','weekdays', 'months',
                                 'body', 'groups')
 
@@ -95,7 +95,7 @@ class ForwardingRuleForm(forms.ModelForm):
 
 class ReportForm(forms.Form):
     report_month = forms.TypedChoiceField(label='Report Month', required=False,
-        coerce=int, choices=MONTHS.items(), 
+        coerce=int, choices=MONTHS.items(),
     )
     report_year = forms.IntegerField(label='Report Year', required=False,
         min_value=1970, max_value=datetime.date.today().year

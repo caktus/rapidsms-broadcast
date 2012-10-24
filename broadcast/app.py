@@ -7,13 +7,12 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 
 from rapidsms.apps.base import AppBase
-from rapidsms.messages import OutgoingMessage
 from rapidsms.contrib.scheduler.models import EventSchedule
+from rapidsms.messages import OutgoingMessage
 
-from aremind.apps.broadcast.models import Broadcast, BroadcastMessage,\
-                                         ForwardingRule
-from aremind.apps.broadcast.views import usage_report_context
-from aremind.apps.groups import models as groups
+from broadcast.models import Broadcast, BroadcastMessage, ForwardingRule
+from broadcast.views import usage_report_context
+from groups import models as groups
 
 
 # In RapidSMS, message translation is done in OutgoingMessage, so no need
@@ -27,7 +26,7 @@ def scheduler_callback(router):
     Basic rapidsms.contrib.scheduler.models.EventSchedule callback
     function that runs BroadcastApp.cronjob()
     """
-    app = router.get_app("aremind.apps.broadcast")
+    app = router.get_app("broadcast")
     app.cronjob()
 
 

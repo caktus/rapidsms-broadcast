@@ -1,9 +1,9 @@
 from threadless_router.router import Router
 
-from celery.task import Task
 from celery.registry import tasks
+from celery.task import Task
 
-from aremind.apps.broadcast.app import scheduler_callback
+from broadcast.app import scheduler_callback
 
 
 class BroadcastCronTask(Task):

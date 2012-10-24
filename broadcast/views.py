@@ -15,8 +15,9 @@ from django.utils import simplejson as json
 
 from rapidsms.contrib.messagelog.models import Message
 
-from aremind.apps.broadcast.forms import BroadcastForm, ForwardingRuleForm, ReportForm, RecentMessageForm
-from aremind.apps.broadcast.models import Broadcast, BroadcastMessage, ForwardingRule
+from broadcast.forms import BroadcastForm, ForwardingRuleForm, ReportForm,
+        RecentMessageForm
+from broadcast.models import Broadcast, BroadcastMessage, ForwardingRule
 from aremind.apps.patients.models import Patient
 from aremind.apps.reminders.models import SentNotification
 from aremind.apps.wisepill.constants import WISEPILL_LOW_BATTERY
@@ -147,7 +148,7 @@ def dashboard(request):
     context['low_battery_patients'] = Patient.objects.\
               filter(batterystrength__lte=WISEPILL_LOW_BATTERY).\
               exclude(batterystrength=-1)
-    # Graph data 
+    # Graph data
     return render_to_response('broadcast/dashboard.html', context,
                               RequestContext(request))
 
@@ -168,7 +169,7 @@ def usage_report_context(start_date, end_date):
     for rule in named_rules:
         data = rule_data.get(rule.rule_type, {})
         label_data = data.get(rule.label, [0, 0])
-        data[rule.label] = label_data   
+        data[rule.label] = label_data
         rule_data[rule.rule_type] = data
     for broadcast in broadcasts:
         rule = broadcast.forward
@@ -176,7 +177,7 @@ def usage_report_context(start_date, end_date):
         label_data = data.get(rule.label, [0, 0])
         label_data[0] += 1
         label_data[1] += broadcast.message_count
-        data[rule.label] = label_data   
+        data[rule.label] = label_data
         rule_data[rule.rule_type] = data
 
     # Get patient reminder data

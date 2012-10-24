@@ -14,10 +14,10 @@ from rapidsms.messages.outgoing import OutgoingMessage
 from rapidsms.messages.incoming import IncomingMessage
 
 from aremind.tests.testcases import CreateDataTest, FlushTestScript
-from aremind.apps.broadcast.models import Broadcast, DateAttribute,\
+from broadcast.models import Broadcast, DateAttribute,\
                                          ForwardingRule
-from aremind.apps.broadcast.app import BroadcastApp, scheduler_callback
-from aremind.apps.broadcast.forms import BroadcastForm
+from broadcast.app import BroadcastApp, scheduler_callback
+from broadcast.forms import BroadcastForm
 from aremind.apps.patients.tests import PatientsCreateDataTest
 from aremind.apps.wisepill.constants import WISEPILL_LOW_BATTERY
 
@@ -332,7 +332,7 @@ class LowBatteryViewTest(PatientsCreateDataTest):
         context = response.context
         self.assertEquals(len(context['low_battery_patients']), 1)
         self.assertEquals(context['low_battery_patients'][0], patient)
-        
+
 class BroadcastForwardingTest(BroadcastCreateDataTest):
 
     def setUp(self):
@@ -463,7 +463,7 @@ class ForwardingViewsTest(BroadcastCreateDataTest):
 
         response = self.client.get(self.dashboard_url)
         self.assertEqual(response.status_code, 200)
-        
+
     def test_get_create_page(self):
         """
         Test retriving the create forwarding rule form.
@@ -492,7 +492,7 @@ class ForwardingViewsTest(BroadcastCreateDataTest):
         """
 
         data = self.get_valid_data()
-        rule = self.create_forwarding_rule()  
+        rule = self.create_forwarding_rule()
         url = reverse('broadcast-forwarding-edit', args=[rule.pk])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -503,8 +503,8 @@ class ForwardingViewsTest(BroadcastCreateDataTest):
         """
 
         data = self.get_valid_data()
-        rule = self.create_forwarding_rule()       
-        start_count = ForwardingRule.objects.count()        
+        rule = self.create_forwarding_rule()
+        start_count = ForwardingRule.objects.count()
         url = reverse('broadcast-forwarding-edit', args=[rule.pk])
         response = self.client.post(url, data)
         self.assertRedirects(response, self.dashboard_url)
@@ -516,7 +516,7 @@ class ForwardingViewsTest(BroadcastCreateDataTest):
         Test retriving the delete forwarding rule form.
         """
 
-        rule = self.create_forwarding_rule()  
+        rule = self.create_forwarding_rule()
         url = reverse('broadcast-forwarding-delete', args=[rule.pk])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
