@@ -1,5 +1,5 @@
-{{ rapidsms-broadcast }}
-========================
+rapidsms-broadcast
+==================
 
 Welcome to the documentation for rapidsms-broadcast!
 
