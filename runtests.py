@@ -13,6 +13,8 @@ if not settings.configured:
             }
         },
         INSTALLED_APPS=(
+            'django.contrib.auth',
+            'django.contrib.contenttypes',
             'rapidsms',
             'rapidsms.contrib.messagelog',
             'rapidsms.contrib.scheduler',
@@ -21,6 +23,10 @@ if not settings.configured:
         ),
         SITE_ID=1,
         SECRET_KEY='this-is-just-for-tests-so-not-that-secret',
+        ROOT_URLCONF='broadcast.tests.urls',
+
+        RAPIDSMS_TABS=[],
+        INSTALLED_BACKENDS={},
     )
 
 
