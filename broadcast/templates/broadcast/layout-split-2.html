@@ -1,0 +1,24 @@
+{% extends "layout-split-2.html" %}
+
+{% load i18n %}
+
+{% block javascripts %}
+    {{ block.super }}
+    {% include '_javascripts.html' %}
+{% endblock %}
+
+{% block stylesheets %}
+    {{ block.super }}
+    {% include '_css.html' %}
+{% endblock %}
+
+{% block auth %}
+<div id="auth">
+    {% if user.is_authenticated %}
+        <a href="{% url auth_password_change %}">{% trans "Change Password" %}</a> |
+        <a href="{% url rapidsms-logout %}">{% trans "Log out" %} {{ user.username }}</a>
+    {% else %}
+        <a href="{% url rapidsms-login %}">{% trans "Log in" %}</a>
+    {% endif %}
+</div>
+{% endblock %}
