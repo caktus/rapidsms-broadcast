@@ -128,6 +128,7 @@ def delete_rule(request, rule_id):
     return render_to_response('broadcast/delete_rule.html', context,
                               RequestContext(request))
 
+
 @login_required
 def dashboard(request):
     today = datetime.date.today()
@@ -185,6 +186,10 @@ def usage_report_context(start_date, end_date):
 #        start_date, end_date).count()
 #    unconfirmed_count = SentNotification.objects.unconfirmed_for_range(
 #        start_date, end_date).count()
+
+    #temp workaround to removing patients app as dep
+    confirmed_count = unconfirmed_count = 0
+
     total_reminders = confirmed_count + unconfirmed_count
 
     # Get total incoming/outgoing data
