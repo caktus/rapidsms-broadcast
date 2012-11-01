@@ -1,9 +1,9 @@
 # vim: ai ts=4 sts=4 et sw=4
-import datetime
 from dateutil import rrule
 import logging
 
 from django.db import models
+from django.utils import timezone
 
 from rapidsms.models import Contact
 
@@ -59,7 +59,7 @@ class DateAttribute(models.Model):
 class BroadcastReadyManager(models.Manager):
     def get_query_set(self):
         qs = super(BroadcastReadyManager, self).get_query_set()
-        qs = qs.filter(date__lt=datetime.datetime.now())
+        qs = qs.filter(date__lt=timezone.now())
         qs = qs.exclude(schedule_frequency__isnull=True)
         return qs
 
@@ -111,7 +111,7 @@ class Broadcast(models.Model):
     def get_next_date(self):
         """ calculate next date based on configured characteristics """
         logger.debug('get_next_date - {0}'.format(self))
-        now = datetime.datetime.now()
+        now = timezone.now()
         # return current date if it's in the future
         if self.date > now:
             return self.date
@@ -149,7 +149,7 @@ class Broadcast(models.Model):
     def set_next_date(self):
         """ update broadcast to be ready for next date """
         logger.debug('set_next_date start - {0}'.format(self))
-        now = datetime.datetime.now()
+        now = timezone.now()
         next_date = self.get_next_date()
         # Disable this broadcast if it was a one-time notification (we just
         # sent it). This will make get_next_date() return None below.
@@ -169,7 +169,7 @@ class Broadcast(models.Model):
 
     def save(self, **kwargs):
         if not self.pk:
-            self.date_created = datetime.datetime.now()
+            self.date_created = timezone.now()
         return super(Broadcast, self).save(**kwargs)
 
 
@@ -191,7 +191,7 @@ class BroadcastMessage(models.Model):
 
     def save(self, **kwargs):
         if not self.pk:
-            self.date_created = datetime.datetime.now()
+            self.date_created = timezone.now()
         return super(BroadcastMessage, self).save(**kwargs)
 
 
