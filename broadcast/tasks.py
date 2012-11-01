@@ -8,7 +8,7 @@ from broadcast.app import scheduler_callback
 
 class BroadcastCronTask(Task):
     def run(self):
-        router = get_router() 
+        router = get_router()()
         scheduler_callback(router)
 
 
