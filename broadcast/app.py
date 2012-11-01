@@ -7,7 +7,6 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 
 from rapidsms.apps.base import AppBase
-from rapidsms.contrib.scheduler.models import EventSchedule
 from rapidsms.messages import OutgoingMessage
 
 from broadcast.models import Broadcast, BroadcastMessage, ForwardingRule
