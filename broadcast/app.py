@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # vim: ai ts=4 sts=4 et sw=4
 import datetime
+import logging
 
 from django.conf import settings
 from django.core.mail import send_mail
@@ -9,11 +10,11 @@ from django.utils.timezone import now
 
 from rapidsms.apps.base import AppBase
 from rapidsms.messages import OutgoingMessage
+from rapidsms.router import send
 
 from broadcast.models import Broadcast, BroadcastMessage, ForwardingRule
 from broadcast.views import usage_report_context
 from groups import models as groups
-
 
 # In RapidSMS, message translation is done in OutgoingMessage, so no need
 # to attempt the real translation here.  Use _ so that ./manage.py makemessages
@@ -21,20 +22,51 @@ from groups import models as groups
 _ = lambda s: s
 
 
-def scheduler_callback(router):
-    """
-    Basic rapidsms.contrib.scheduler.models.EventSchedule callback
-    function that runs BroadcastApp.cronjob()
-    """
-    app = router.get_app("broadcast")
-    app.cronjob()
+logger = logging.getLogger('broadcast.app')
+
+
+def scheduler_callback():
+    """ Prepare and send broadcast messages. """
+    logger.info('Starting cron job.')
+    queue_outgoing_messages()
+    send_queued_messages()
+
+
+def queue_outgoing_messages():
+    """ Generate queued messages for scheduled broadcasts. """
+    broadcasts = Broadcast.ready.all()
+    logger.info('Found {0} ready broadcast(s)'.format(broadcasts.count()))
+    for broadcast in Broadcast.ready.all():
+        # TODO: make sure this process is atomic
+        count = broadcast.queue_outgoing_messages()
+        logger.debug('Queued {0} broadcast message(s)'.format(count))
+        broadcast.set_next_date()
+        broadcast.save()
+
+
+def send_queued_messages():
+    """ Send messages which have been queued for delivery. """
+    messages = BroadcastMessage.objects.filter(status='queued')[:50]
+    logger.info('Found {0} message(s) to send'.format(messages.count()))
+    for message in messages:
+        connection = message.recipient.default_connection
+        try:
+            msg = send(text=message.broadcast.body, connection=connection)
+        except Exception, e:
+            msg = None
+            logger.exception(e)
+        if msg and msg.sent:
+            logger.debug('Message sent successfully!')
+            message.status = 'sent'
+            message.date_sent = now()
+        else:
+            logger.debug('Message failed to send.')
+            message.status = 'error'
+        message.save()
 
 
 def usage_email_callback(router, *args, **kwargs):
-    """
-    Send out month email report of broadcast usage.
-    """
-
+    """ Send out month email report of broadcast usage. """
     today = datetime.date.today()
     report_date = today - datetime.timedelta(days=today.day)
     start_date = datetime.date(report_date.year, report_date.month, 1)
@@ -97,45 +129,3 @@ class BroadcastApp(AppBase):
                                              body=full_msg, forward=rule)
         broadcast.groups.add(rule.dest)
         msg.respond(self.thank_you)
-
-    def queue_outgoing_messages(self):
-        """ generate queued messages for scheduled broadcasts """
-        broadcasts = Broadcast.ready.all()
-        self.info('found {0} ready broadcast(s)'.format(broadcasts.count()))
-        for broadcast in Broadcast.ready.all():
-            # TODO: make sure this process is atomic
-            count = broadcast.queue_outgoing_messages()
-            self.debug('queued {0} broadcast message(s)'.format(count))
-            broadcast.set_next_date()
-            broadcast.save()
-
-    def send_messages(self):
-        """ send queued for delivery messages """
-        messages = BroadcastMessage.objects.filter(status='queued')[:50]
-        self.info('found {0} message(s) to send'.format(messages.count()))
-        for message in messages:
-            connection = message.recipient.default_connection
-            msg = OutgoingMessage(connection=connection,
-                                  template=message.broadcast.body)
-            success = True
-            try:
-                self.router.outgoing(msg)
-            except Exception, e:
-                self.exception(e)
-                success = False
-            if success and msg.sent:
-                self.debug('message sent successfully')
-                message.status = 'sent'
-                message.date_sent = now()
-            else:
-                self.debug('message failed to send')
-                message.status = 'error'
-            message.save()
-
-    def cronjob(self):
-        self.debug('cron job running')
-        # grab all broadcasts ready to go out and queue their messages
-        self.queue_outgoing_messages()
-        # send queued messages
-        self.send_messages()
-
