@@ -17,37 +17,6 @@
     </form>
 </div>
 <div class="module">
-    <h2>Wisepill Devices With Low Battery</h2>
-    {% comment %}
-    should appear as a list of devices with any additional battery level information that the API provides.
-
-Also should show:
-Subject number
-Wisepill MSISDN
-Mobile Number
-{% endcomment %}
-{% if low_battery_patients %}
-<table>
-    <tr>
-        <th>Subject Number</th>
-        <th>Wisepill MSISDN</th>
-        <th>Mobile Number</th>
-        <th>Battery Strength (mV)</th>
-    </tr>
-    {% for patient in low_battery_patients %}
-    <tr>
-        <td>{{ patient.subject_number }}</td>
-        <td>{{ patient.msisdn }}</td>
-        <td>{{ patient.mobile_number }}</td>
-        <td>{{ patient.batterystrength }}</td>
-    </tr>
-    {% endfor %}
-</table>
-{% else %}
-<p>None</p>
-{% endif %}
-</div>
-<div class="module">
     <h2>Forwarded Messages</h2>
     {% if rule_data %}
     <ul>
@@ -66,21 +35,12 @@ Mobile Number
     {% endif %}
 </div>
 <div class="module">
-    <h2>Appointment Reminders</h2>
-    <ul>
-        <li>Sent: {{ total_reminders  }}</li>
-        <li>Confirmed: {{ confirmed_count }}</li>
-        <li>Unconfirmed: {{ unconfirmed_count }}</li>
-        <li>Percent Confirmed: {{ confirm_percent }}%</li>
-    </ul>
-</div>
-<div class="module">
     <h2>Usage Totals</h2>
     <ul>
         <li>Incoming Messages: {{ incoming_count }}</li>
         <li>Outgoing Messages: {{ outgoing_count }}</li>
         <li>Total Messages: {{ total_messages }}</li>
-    </ul>    
+    </ul>
 </div>
 <div id='usage-chart' style="width: 900px; height: 240px;" data-url="{% url broadcast-usage-graph-data %}{% if request.META.QUERY_STRING %}?{{ request.META.QUERY_STRING }}{% endif %}"></div>
 {% endblock %}
