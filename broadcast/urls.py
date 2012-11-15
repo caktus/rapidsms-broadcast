@@ -7,7 +7,7 @@ from broadcast import views
 
 urlpatterns = patterns('',
     url(r'^send/$', views.send_message,
-        name='send-message'),
+        name='send-broadcast'),
 
     url(r'^schedule/$', views.schedule,
         name='broadcast-schedule'),
@@ -38,4 +38,7 @@ urlpatterns = patterns('',
 
     url('^message-data/$', views.last_messages,
         name='broadcast-usage-recent-messages'),
+
+    url('^dashboard/$', views.dashboard,
+        name='broadcast-dashboard'),
 )
