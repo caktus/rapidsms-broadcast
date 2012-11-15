@@ -24,35 +24,31 @@ if not settings.configured:
             'django_sorting',
             'pagination',
         ),
-        TEMPLATE_CONTEXT_PROCESSORS=(
-            'django.contrib.auth.context_processors.auth',
-            'django.contrib.messages.context_processors.messages',
-            'django.core.context_processors.debug',
-            'django.core.context_processors.i18n',
-            'django.core.context_processors.media',
-            'django.core.context_processors.request',
-            'django.core.context_processors.static',
-        ),
-        MIDDLEWARE_CLASSES=(
-            'django.contrib.auth.middleware.AuthenticationMiddleware',
-            'django.contrib.messages.middleware.MessageMiddleware',
-            'django.contrib.sessions.middleware.SessionMiddleware',
-            'django.middleware.common.CommonMiddleware',
-            'django.middleware.csrf.CsrfViewMiddleware',
-            'pagination.middleware.PaginationMiddleware',
-            'django_sorting.middleware.SortingMiddleware',
-        ),
-        SITE_ID=1,
-        SECRET_KEY='this-is-just-for-tests-so-not-that-secret',
-        ROOT_URLCONF='broadcast.tests.urls',
-
-        LOGIN_URL = '/account/login/',
-        RAPIDSMS_TABS=[],
         INSTALLED_BACKENDS={
             'mockbackend': {
                 'ENGINE': 'rapidsms.tests.harness.backend',
             },
         },
+        LOGIN_URL = '/account/login/',
+        MIDDLEWARE_CLASSES=(
+            'django.middleware.common.CommonMiddleware',
+            'django.contrib.sessions.middleware.SessionMiddleware',
+            'django.middleware.csrf.CsrfViewMiddleware',
+            'django.contrib.auth.middleware.AuthenticationMiddleware',
+            'django.contrib.messages.middleware.MessageMiddleware',
+            'pagination.middleware.PaginationMiddleware',
+            'django_sorting.middleware.SortingMiddleware',
+        ),
+        RAPIDSMS_TABS=[],
+        ROOT_URLCONF='broadcast.tests.urls',
+        SITE_ID=1,
+        SECRET_KEY='this-is-just-for-tests-so-not-that-secret',
+        TEMPLATE_CONTEXT_PROCESSORS=(
+            'django.contrib.auth.context_processors.auth',
+            'django.contrib.messages.context_processors.messages',
+            'django.core.context_processors.request',
+            'django.core.context_processors.static',
+        ),
     )
 
 
