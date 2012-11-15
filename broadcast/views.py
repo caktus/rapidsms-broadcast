@@ -6,8 +6,7 @@ import datetime
 from django.db import transaction
 from django.core.urlresolvers import reverse
 from django.conf import settings
-from django.template.context import RequestContext
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -45,12 +44,10 @@ def send_message(request, broadcast_id=None):
     else:
         form = BroadcastForm(instance=broadcast)
     broadcasts = Broadcast.objects.exclude(schedule_frequency__isnull=True)
-    context = {
+    return render(request, 'broadcast/send_message.html', {
         'form': form,
         'broadcasts': broadcasts.order_by('date'),
-    }
-    return render_to_response('broadcast/send_message.html', context,
-                              RequestContext(request))
+    })
 
 
 @login_required
@@ -63,39 +60,33 @@ def delete_broadcast(request, broadcast_id):
         broadcast.save()
         messages.info(request, 'Broadcast successfully deleted')
         return HttpResponseRedirect(reverse('broadcast-schedule'))
-    context = {'broadcast': broadcast}
-    return render_to_response('broadcast/delete.html', context,
-                              RequestContext(request))
+    return render(request, 'broadcast/delete.html', {
+        'broadcast': broadcast,
+    })
 
 
 @login_required
 def schedule(request):
     broadcasts = Broadcast.objects.exclude(schedule_frequency__isnull=True)
     broadcasts = broadcasts.annotate(recipients=Count('groups__contacts', distinct=True))
-    context = {
+    return render(request, 'broadcast/schedule.html', {
         'broadcasts': broadcasts.order_by('date'),
-    }
-    return render_to_response('broadcast/schedule.html', context,
-                              RequestContext(request))
+    })
 
 
 @login_required
 def list_messages(request):
     messages = BroadcastMessage.objects.select_related()
-    context = {
+    return render(request, 'broadcast/messages.html', {
         'broadcast_messages': messages,
-    }
-    return render_to_response('broadcast/messages.html', context,
-                              RequestContext(request))
+    })
 
 
 @login_required
 def forwarding(request):
-    context = {
+    return render(request, 'broadcast/forwarding.html', {
         'rules': ForwardingRule.objects.all(),
-    }
-    return render_to_response('broadcast/forwarding.html', context,
-                              RequestContext(request))
+    })
 
 
 @login_required
@@ -111,12 +102,10 @@ def create_edit_rule(request, rule_id=None):
             return redirect('broadcast-forwarding')
     else:
         form = ForwardingRuleForm(instance=rule)
-    context = {
+    return render(request, 'broadcast/create_edit_rule.html', {
         'form': form,
         'rule': rule,
-    }
-    return render_to_response('broadcast/create_edit_rule.html', context,
-                              context_instance=RequestContext(request))
+    })
 
 
 @login_required
@@ -126,9 +115,9 @@ def delete_rule(request, rule_id):
         rule.delete()
         messages.info(request, 'Forwarding Rule successfully deleted')
         return redirect('broadcast-forwarding')
-    context = {'rule': rule}
-    return render_to_response('broadcast/delete_rule.html', context,
-                              RequestContext(request))
+    return render(request, 'broadcast/delete_rule.html', {
+        'rule': rule,
+    })
 
 
 @login_required
@@ -152,8 +141,7 @@ def dashboard(request):
 #              filter(batterystrength__lte=WISEPILL_LOW_BATTERY).\
 #              exclude(batterystrength=-1)
     # Graph data
-    return render_to_response('broadcast/dashboard.html', context,
-                              RequestContext(request))
+    return render(request, 'broadcast/dashboard.html', context)
 
 
 def usage_report_context(start_date, end_date):
