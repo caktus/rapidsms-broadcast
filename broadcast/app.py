@@ -51,11 +51,11 @@ def send_queued_messages():
     for message in messages:
         connection = message.recipient.default_connection
         try:
-            msg = send(text=message.broadcast.body, connection=connection)
+            msg = send(message.broadcast.body, connection)[0]
         except Exception, e:
             msg = None
             logger.exception(e)
-        if msg and msg.sent:
+        if msg:
             logger.debug('Message sent successfully!')
             message.status = 'sent'
             message.date_sent = now()
