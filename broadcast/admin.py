@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# vim: ai ts=4 sts=4 et sw=4 encoding=utf-8
 from django.contrib import admin
 
 from broadcast import models as broadcast
@@ -18,5 +20,6 @@ class BroadcastMessageAdmin(admin.ModelAdmin):
     ordering = ('-date_created',)
 
 admin.site.register(broadcast.BroadcastMessage, BroadcastMessageAdmin)
+
 
 admin.site.register(broadcast.ForwardingRule)
