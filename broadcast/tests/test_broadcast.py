@@ -26,14 +26,15 @@ from broadcast.forms import BroadcastForm
 class BroadcastCreateDataTest(CreateDataTest):
     """ Base test case that provides helper functions to create data """
 
-    def create_broadcast(self, when='', commit=True, data={}):
+    def create_broadcast(self, when='', data=None):
         now = datetime.datetime.now()
         defaults = {
             'date': now,
             'schedule_frequency': 'daily',
             'body': self.random_string(140),
         }
-        defaults.update(data)
+        if data:
+            defaults.update(data)
         groups = defaults.pop('groups', [])
         weekdays = defaults.pop('weekdays', [])
         months = defaults.pop('months', [])
@@ -194,7 +195,7 @@ class BroadcastAppTest(BroadcastCreateDataTest):
 
     def test_ready_manager(self):
         """ test Broadcast.ready manager returns broadcasts ready to go out """
-        b1 = self.create_broadcast(when='past')
+        b1 = self.create_broadcast(when='ready')
         b2 = self.create_broadcast(when='future')
         ready = Broadcast.ready.values_list('id', flat=True)
         self.assertTrue(b1.pk in ready)
@@ -404,20 +405,17 @@ class BroadcastScriptedTest(BroadcastCreateDataTest):
         # ready broadcast
         g1 = self.create_group()
         contact.groups.add(g1)
-        b1 = self.create_broadcast(when='past', data={'groups': [g1]})
+        b1 = self.create_broadcast(when='ready', data={'groups': [g1]})
         # non-ready broadcast
         g2 = self.create_group()
         contact.groups.add(g2)
         b2 = self.create_broadcast(when='future', data={'groups': [g2]})
         # run cronjob
-        scheduler_callback(self.router)
-        queued = contact.broadcast_messages.filter(status='queued').count()
-        sent = contact.broadcast_messages.filter(status='sent').count()
-        # nothing should be queued (future broadcast isn't ready)
-        self.assertEqual(queued, 0)
-        # only one message should be sent
-        self.assertEqual(sent, 1)
-        message = contact.broadcast_messages.filter(status='sent')[0]
+        scheduler_callback()
+        # one sent message (future broadcast isn't ready)
+        self.assertEquals(contact.broadcast_messages.count(), 1)
+        message = contact.broadcast_messages.get()
+        self.assertEquals(message.status, 'sent')
         self.assertTrue(message.date_sent is not None)
 
 

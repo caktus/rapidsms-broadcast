@@ -6,7 +6,7 @@ import logging
 from django.conf import settings
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
-from django.utils.timezone import now
+from django.utils.timezone import now as get_now
 
 from rapidsms.apps.base import AppBase
 from rapidsms.messages import OutgoingMessage
@@ -58,7 +58,7 @@ def send_queued_messages():
         if msg and msg.sent:
             logger.debug('Message sent successfully!')
             message.status = 'sent'
-            message.date_sent = now()
+            message.date_sent = get_now()
         else:
             logger.debug('Message failed to send.')
             message.status = 'error'
@@ -117,7 +117,7 @@ class BroadcastApp(AppBase):
           not rule.source.contacts.filter(pk=contact.pk).exists():
             msg.respond(self.not_registered)
             return True
-        now = now()
+        now = get_now()
         msg_text = [rule.message, u' '.join(msg_parts[1:])]
         msg_text = [m for m in msg_text if m]
         msg_text = u' '.join(msg_text)
