@@ -20,20 +20,27 @@ dependencies to your installed apps::
         'rapidsms.contrib.messagelog',
         'groups',
         'broadcast',
-        'django_sorting',
         'pagination',
+        'sorter',
         ...
     ]
 
 In addition to the default middleware classes, be sure to include pagination
-and sorting middleware::
+middleware::
 
     MIDDLEWARE_CLASSES = [
         ...
         'pagination.middleware.PaginationMiddleware',
-        'django_sorting.middleware.SortingMiddleware',
         ...
     ]
+
+Configure django_sorter::
+
+    SORTER_ALLOWED_CRITERA = {
+        'sort_rules': ['id', 'keyword', 'source', 'dest', 'message', 'rule_type', 'label'],
+        'sort_broadcasts': ['id', 'date', 'schedule_frequency', 'body'],
+        'sort_messages': ['broadcast__id', 'broadcast__body', 'date_created', 'status', 'recipient', 'date_sent'],
+    }
 
 Add broadcast URLs to your urlconf::
 
@@ -55,7 +62,7 @@ Run syncdb or migrate::
 Running the Tests
 -----------------
 
-You can run the tests with via::
+You can run the tests via::
 
     python runtests.py
 

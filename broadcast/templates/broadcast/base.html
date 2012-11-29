@@ -15,8 +15,8 @@
     <h3>Broadcasts</h3>
     <ul id='broadcast-nav'>
         <li><a title="Send a Message" href="{% url send-broadcast %}">Send a Message</a></li>
-        <li><a title="Broadcast Schedule" href="{% url broadcast-schedule %}?sort=date&dir=asc">Broadcast Schedule</a></li>
-        <li><a title="History" href="{% url broadcast-messages %}?sort=date_created">History</a></li>
+        <li><a title="Broadcast Schedule" href="{% url broadcast-schedule %}?sort_broadcasts=-date">Broadcast Schedule</a></li>
+        <li><a title="History" href="{% url broadcast-messages %}?sort_messages=date_created">History</a></li>
     </ul>
 </div>
 

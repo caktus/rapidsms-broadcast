@@ -1,5 +1,5 @@
 {% extends "broadcast/base.html" %}
-{% load sorting_tags pagination_tags %}
+{% load sorter_tags pagination_tags %}
 
 {% block title %}Forwarding Rules{% endblock %}
 
@@ -13,7 +13,7 @@
 {% endblock %}
 
 {% block content %}
-{% autosort rules %}
+{% sort rules with "rules" as sorted_rules %}
 {% autopaginate rules 15 %}
 
 <div class="module">
@@ -22,17 +22,17 @@
     <table id='rules' class="pagination sortable">
         <thead>
             <tr>
-                <th>{% anchor id "ID" %}</th>                
-                <th>{% anchor keyword Keyword %}</th>
-                <th>{% anchor source Source %}</th>
-                <th>{% anchor dest Destination %}</th>
-                <th>{% anchor message Message %}</th>
-                <th>{% anchor rule_type Type %}</th>
-                <th>{% anchor label Label %}</th>
+                <th>{% sortlink with "rules" by "id" "-id" %}ID{% endsortlink %}</th>
+                <th>{% sortlink with "rules" by "keyword" "-keyword" %}Keyword{% endsortlink %}</th>
+                <th>{% sortlink with "rules" by "source" "-source" %}Source{% endsortlink %}</th>
+                <th>{% sortlink with "rules" by "dest" "-dest" %}Destination{% endsortlink %}</th>
+                <th>{% sortlink with "rules" by "message" "-message" %}Message{% endsortlink %}</th>
+                <th>{% sortlink with "rules" by "rule_type" "-rule_type" %}Type{% endsortlink %}</th>
+                <th>{% sortlink with "rules" by "label" "-label" %}Label{% endsortlink %}</th>
                 <th>Actions</th>
             </tr>
         </thead>
-        {% for rule in rules %}
+        {% for rule in sorted_rules %}
         <tr class="{% cycle 'odd' 'even' %}">
             <td>{{ rule.id }}</td>
             <td>{{ rule.keyword }}</td>
@@ -43,7 +43,7 @@
             <td>{{ rule.label }}</td>
             <td class='actions'>
                 <a class='button' title='Edit rule #{{ rule.pk }}' href='{% url broadcast-forwarding-edit rule.pk %}'><span class='ui-icon ui-icon-pencil'></span></a>
-                <a class='button' title='Delete rule #{{ rule.pk }}' href='{% url broadcast-forwarding-delete rule.pk %}'><span class='ui-icon ui-icon-closethick'></span></a>    
+                <a class='button' title='Delete rule #{{ rule.pk }}' href='{% url broadcast-forwarding-delete rule.pk %}'><span class='ui-icon ui-icon-closethick'></span></a>
             </td>
         </tr>
         {% empty %}

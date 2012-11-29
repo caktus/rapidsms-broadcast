@@ -1,11 +1,11 @@
 {% extends "broadcast/base.html" %}
-{% load sorting_tags pagination_tags %}
+{% load sorter_tags pagination_tags %}
 
 {% block title %}Broadcast Schedule{% endblock %}
 
 {% block right %}
 
-{% autosort broadcasts %}
+{% sort broadcasts with "broadcasts" as sorted_broadcasts %}
 {% autopaginate broadcasts 15 %}
 
 <div class="module">
@@ -13,15 +13,15 @@
     <table id='broadcasts' class="sortable pagination">
         <thead>
             <tr>
-                <th>{% anchor id "Message ID" %}</th>
-                <th>{% anchor date "Scheduled Date" %}</th>
-                <th>{% anchor schedule_frequency Frequency %}</th>
-                <th>{% anchor body Message %}</th>
+                <th>{% sortlink with "broadcasts" by "id" "-id" %}Message ID{% endsortlink %}</th>
+                <th>{% sortlink with "broadcasts" by "date" "-date" %}Scheduled Date{% endsortlink %}</th>
+                <th>{% sortlink with "broadcasts" by "schedule_frequency" "-schedule_frequency" %}Frequency{% endsortlink %}</th>
+                <th>{% sortlink with "broadcasts" by "body" "-body" %}Message{% endsortlink %}</th>
                 <th>Groups (Recipient Count)</th>
                 <th>Actions</th>
             </tr>
         </thead>
-        {% for broadcast in broadcasts %}
+        {% for broadcast in sorted_broadcasts %}
         <tr class="{% cycle 'odd' 'even' %}">
             <td>{{ broadcast.pk }}</td>
             <td>{{ broadcast.date|date:"m/d/y fa" }}</td>
@@ -32,7 +32,7 @@
             <td>{{ broadcast.groups.all|join:", "|truncatewords:3 }} ({{ broadcast.recipients }})</td>
             <td class='actions'>
                 <a class='button' title='Edit broadcast #{{ broadcast.pk }}' href='{% url edit-broadcast broadcast.pk %}'><span class='ui-icon ui-icon-pencil'></span></a>
-                <a class='button' title='Delete broadcast #{{ broadcast.pk }}' href='{% url delete-broadcast broadcast.pk %}'><span class='ui-icon ui-icon-closethick'></span></a>    
+                <a class='button' title='Delete broadcast #{{ broadcast.pk }}' href='{% url delete-broadcast broadcast.pk %}'><span class='ui-icon ui-icon-closethick'></span></a>
             </td>
         </tr>
         {% empty %}

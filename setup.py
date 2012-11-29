@@ -1,6 +1,11 @@
 import os
 from setuptools import setup, find_packages
 
+required_packages = [
+    'django>=1.3',
+    'django-pagination==1.0.7',
+    'django-sorter==0.2',
+]
 
 def read_file(filename):
     """Read a file into a string"""
@@ -34,6 +39,8 @@ setup(
         'Operating System :: OS Independent',
     ],
     long_description=read_file('README.rst'),
+    tests_require=required_packages,
     test_suite="runtests.runtests",
+    install_requires=required_packages,
     zip_safe=False,
 )

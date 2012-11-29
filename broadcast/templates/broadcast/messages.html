@@ -1,5 +1,5 @@
 {% extends "broadcast/base.html" %}
-{% load sorting_tags pagination_tags %}
+{% load sorter_tags pagination_tags %}
 
 {% block title %}Broadcast History{% endblock %}
 
@@ -17,7 +17,7 @@
 
 {% block right %}
 
-{% autosort broadcast_messages %}
+{% sort broadcast_messages with "messages" as sorted_messages %}
 {% autopaginate broadcast_messages 20 %}
 
 <div class="module">
@@ -25,15 +25,15 @@
     <table id='broadcast-history' class="sortable pagination">
         <thead>
             <tr>
-                <th>{% anchor broadcast__id "Message ID" %}</th>
-                <th>{% anchor broadcast__body Message %}</th>
-                <th>{% anchor date_created Queued %}</th>
-                <th>{% anchor status Status %}</th>
-                <th>{% anchor recipient Recipient %}</th>
-                <th>{% anchor date_sent Sent %}</th>
+                <th>{% sortlink with "messages" by "broadcast__id" "-broadcast__id" %}Message ID{% endsortlink %}</th>
+                <th>{% sortlink with "messages" by "broadcast__body" "-broadcast__body" %}Message{% endsortlink %}</th>
+                <th>{% sortlink with "messages" by "date_created" "-date_created" %}Queued{% endsortlink %}</th>
+                <th>{% sortlink with "messages" by "status" "-status" %}Status{% endsortlink %}</th>
+                <th>{% sortlink with "messages" by "recipient" "-recipient" %}Recipient{% endsortlink %}</th>
+                <th>{% sortlink with "messages" by "date_sent" "-date_sent" %}Sent {% endsortlink %}</th>
             </tr>
         </thead>
-        {% for message in broadcast_messages %}
+        {% for message in sorted_messages %}
         <tr class="{% cycle 'odd' 'even' %}">
             <td>{{ message.broadcast.pk }}</td>
             <td><span title='{{ message.broadcast.body }}'>{{ message.broadcast.body|truncatewords:2 }}</span></td>
