@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # vim: ai ts=4 sts=4 et sw=4 encoding=utf-8
 import logging
-from contextlib import contextmanager
 import random
 import string
 
@@ -38,68 +37,32 @@ class CreateDataTest(TestCase):
             output += c + u' '
         return output
 
-    def create_backend(self, data={}):
+    def create_backend(self, **kwargs):
         defaults = {
             'name': self.random_string(12),
         }
-        defaults.update(data)
+        defaults.update(kwargs)
         return Backend.objects.create(**defaults)
 
-    def create_contact(self, data={}):
+    def create_contact(self, **kwargs):
         defaults = {
             'name': self.random_string(12),
         }
-        defaults.update(data)
+        defaults.update(kwargs)
         return Contact.objects.create(**defaults)
 
-    def create_connection(self, data={}):
+    def create_connection(self, **kwargs):
         defaults = {
             'identity': self.random_string(10),
         }
-        defaults.update(data)
+        defaults.update(kwargs)
         if 'backend' not in defaults:
             defaults['backend'] = self.create_backend()
         return Connection.objects.create(**defaults)
 
-    def create_group(self, data={}):
+    def create_group(self, **kwargs):
         defaults = {
             'name': self.random_string(12),
         }
-        defaults.update(data)
+        defaults.update(kwargs)
         return Group.objects.create(**defaults)
-
-
-class FlushTestScript(LegacyTestScript):
-    """
-    To avoid an issue related to TestCases running after TransactionTestCases,
-    extend this class instead of TestScript in RapidSMS. This issue may
-    possibly be related to the use of the django-nose test runner in RapidSMS.
-
-    See this post and Karen's report here:
-    http://groups.google.com/group/django-developers/browse_thread/thread/3fb1c04ac4923e90
-    """
-    def setUp (self):
-        backends = {'mockbackend': {"ENGINE": MockBackend}}
-        self.router = get_router()(apps=self.apps, backends=backends)
-        self.router.join = lambda: None
-        self._init_log(logging.DEBUG)
-        self.backend = self.router.backends["mockbackend"]
-
-    def sendMessage(self, num, txt, date=None):
-        self.router.debug('sending {0} to {1}'.format(txt, num))
-        return super(TestScript, self).sendMessage(num, txt, date)
-
-    def receiveMessage(self):
-        msg = super(TestScript, self).receiveMessage()
-        self.router.debug(msg)
-        return msg
-
-    def startRouter(self):
-        pass
-
-    def stopRouter(self):
-        pass
-
-    def _fixture_teardown(self):
-        call_command('flush', verbosity=0, interactive=False,
-                     database=DEFAULT_DB_ALIAS)

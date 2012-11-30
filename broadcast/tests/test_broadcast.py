@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # vim: ai ts=4 sts=4 et sw=4 encoding=utf-8
 import logging
-import string
-import random
 import datetime
 from dateutil.relativedelta import relativedelta
 from dateutil import rrule
@@ -11,14 +9,11 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
 from rapidsms.tests.harness import MockRouter, MockBackend
-from rapidsms.models import Connection, Contact, Backend
-from rapidsms.messages.outgoing import OutgoingMessage
 from rapidsms.messages.incoming import IncomingMessage
 from rapidsms.router import get_router
 
-from broadcast.tests.base import CreateDataTest, FlushTestScript
-from broadcast.models import Broadcast, DateAttribute,\
-                                         ForwardingRule
+from broadcast.tests.base import CreateDataTest
+from broadcast.models import Broadcast, DateAttribute, ForwardingRule
 from broadcast.app import BroadcastApp, scheduler_callback
 from broadcast.forms import BroadcastForm
 
@@ -26,24 +21,23 @@ from broadcast.forms import BroadcastForm
 class BroadcastCreateDataTest(CreateDataTest):
     """ Base test case that provides helper functions to create data """
 
-    def create_broadcast(self, when='', data=None):
-        now = datetime.datetime.now()
-        defaults = {
-            'date': now,
-            'schedule_frequency': 'daily',
-            'body': self.random_string(140),
-        }
-        if data:
-            defaults.update(data)
-        groups = defaults.pop('groups', [])
-        weekdays = defaults.pop('weekdays', [])
-        months = defaults.pop('months', [])
+    def create_broadcast(self, when='', **kwargs):
+        date = datetime.datetime.now()
         # simple helper flag to create broadcasts in the past or future
         delta = relativedelta(days=1)
         if when == 'ready':
-            defaults.update({'date': now - delta})
+            date -= delta
         elif when == 'future':
-            defaults.update({'date': now + delta})
+            date += delta
+        defaults = {
+            'date': date,
+            'schedule_frequency': 'daily',
+            'body': self.random_string(140),
+        }
+        defaults.update(kwargs)
+        groups = defaults.pop('groups', [])
+        weekdays = defaults.pop('weekdays', [])
+        months = defaults.pop('months', [])
         broadcast = Broadcast.objects.create(**defaults)
         if groups:
             broadcast.groups = groups
@@ -53,15 +47,14 @@ class BroadcastCreateDataTest(CreateDataTest):
             broadcast.months = months
         return broadcast
 
-    def create_forwarding_rule(self, data=None):
-        data = data or {}
+    def create_forwarding_rule(self, **kwargs):
         defaults = {
             'keyword': self.random_string(length=25),
-            'source': self.create_group(data={'name': self.random_string(length=25)}),
-            'dest': self.create_group(data={'name': self.random_string(length=25)}),
+            'source': self.create_group(name=self.random_string(length=25)),
+            'dest': self.create_group(name=self.random_string(length=25)),
             'message': self.random_string(length=25),
         }
-        defaults.update(data)
+        defaults.update(kwargs)
         return ForwardingRule.objects.create(**defaults)
 
     def get_weekday(self, day):
@@ -104,7 +97,7 @@ class BroadcastDateTest(BroadcastCreateDataTest):
     def test_get_next_date_future(self):
         """ get_next_date shouln't increment if date is in the future """
         date = datetime.datetime.now() + relativedelta(hours=1)
-        broadcast = self.create_broadcast(data={'date': date})
+        broadcast = self.create_broadcast(date=date)
         self.assertEqual(broadcast.get_next_date(), date)
         broadcast.set_next_date()
         self.assertEqual(broadcast.date, date,
@@ -113,7 +106,7 @@ class BroadcastDateTest(BroadcastCreateDataTest):
     def test_get_next_date_past(self):
         """ get_next_date should increment if date is in the past """
         date = datetime.datetime.now() - relativedelta(hours=1)
-        broadcast = self.create_broadcast(data={'date': date})
+        broadcast = self.create_broadcast(date=date)
         self.assertTrue(broadcast.get_next_date() > date)
         broadcast.set_next_date()
         self.assertTrue(broadcast.date > date,
@@ -122,8 +115,8 @@ class BroadcastDateTest(BroadcastCreateDataTest):
     def test_one_time_broadcast(self):
         """ one-time broadcasts should disable and not increment """
         date = datetime.datetime.now()
-        data = {'date': date, 'schedule_frequency': 'one-time'}
-        broadcast = self.create_broadcast(data=data)
+        broadcast = self.create_broadcast(date=date,
+                                          schedule_frequency='one-time')
         self.assertEqual(broadcast.get_next_date(), None,
                          "one-time broadcasts have no next date")
         broadcast.set_next_date()
@@ -137,7 +130,7 @@ class BroadcastDateTest(BroadcastCreateDataTest):
         yesterday = datetime.datetime.now() - relativedelta(days=1)
         data = {'date': yesterday, 'schedule_frequency': 'weekly',
                 'weekdays': [self.get_weekday_for_date(yesterday)]}
-        broadcast = self.create_broadcast(data=data)
+        broadcast = self.create_broadcast(**data)
         next = yesterday + relativedelta(weeks=1)
         self.assertDateEqual(broadcast.get_next_date(), next)
 
@@ -146,7 +139,7 @@ class BroadcastDateTest(BroadcastCreateDataTest):
         tomorrow = datetime.datetime.now() + relativedelta(days=1)
         data = {'date': tomorrow, 'schedule_frequency': 'weekly',
                 'weekdays': [self.get_weekday_for_date(tomorrow)]}
-        broadcast = self.create_broadcast(data=data)
+        broadcast = self.create_broadcast(**data)
         self.assertDateEqual(broadcast.get_next_date(), tomorrow)
 
     def test_end_date_disable(self):
@@ -159,8 +152,8 @@ class BroadcastDateTest(BroadcastCreateDataTest):
         """ Test monthly recurrence for past month """
         day = datetime.datetime.now() + relativedelta(days=1)
         one_month_ago = day - relativedelta(months=1)
-        data = {'date': one_month_ago, 'schedule_frequency': 'monthly'}
-        broadcast = self.create_broadcast(data=data)
+        broadcast = self.create_broadcast(date=one_month_ago,
+                                          schedule_frequency='monthly')
         self.assertDateEqual(broadcast.get_next_date(), day)
 
     def test_bymonth_recurrence(self):
@@ -172,7 +165,7 @@ class BroadcastDateTest(BroadcastCreateDataTest):
                   self.get_month_for_date(next_month))
         data = {'date': one_month_ago, 'schedule_frequency': 'monthly',
                 'months': months}
-        broadcast = self.create_broadcast(data=data)
+        broadcast = self.create_broadcast(**data)
         self.assertDateEqual(broadcast.get_next_date(), next_month)
 
 
@@ -186,7 +179,7 @@ class BroadcastAppTest(BroadcastCreateDataTest):
         c2 = self.create_contact()
         g2 = self.create_group()
         c2.groups.add(g2)
-        broadcast = self.create_broadcast(data={'groups': [g1]})
+        broadcast = self.create_broadcast(groups=[g1])
         broadcast.queue_outgoing_messages()
         self.assertEqual(broadcast.messages.count(), 1)
         contacts = broadcast.messages.values_list('recipient', flat=True)
@@ -254,8 +247,7 @@ class BroadcastFormTest(BroadcastCreateDataTest):
 
     def test_update(self):
         """ Test broadcast edit functionality """
-        before = self.create_broadcast(when='future',
-                                       data={'groups': [self.group.pk]})
+        before = self.create_broadcast(when='future', groups=[self.group.pk])
         data =  {
             'when': 'later',
             'date': before.date,
@@ -275,9 +267,8 @@ class BroadcastFormTest(BroadcastCreateDataTest):
     def test_field_clearing(self):
         """ Non related frequency fields should be cleared on form clean """
         weekday = self.get_weekday_for_date(datetime.datetime.now())
-        before = self.create_broadcast(when='future',
-                                       data={'groups': [self.group.pk],
-                                             'weekdays': [weekday]})
+        before = self.create_broadcast(when='future', groups=[self.group.pk],
+                                       weekdays=[weekday])
         data =  {
             'when': 'later',
             'date': before.date,
@@ -302,8 +293,7 @@ class BroadcastViewTest(BroadcastCreateDataTest):
         contact = self.create_contact()
         group = self.create_group()
         contact.groups.add(group)
-        before = self.create_broadcast(when='future',
-                                       data={'groups': [group.pk]})
+        before = self.create_broadcast(when='future', groups=[group.pk])
         url = reverse('delete-broadcast', args=[before.pk])
         response = self.client.post(url)
         self.assertEqual(response.status_code, 302,
@@ -315,21 +305,19 @@ class BroadcastViewTest(BroadcastCreateDataTest):
 class BroadcastForwardingTest(BroadcastCreateDataTest):
 
     def setUp(self):
-        self.source_contact = self.create_contact(data={'first_name': 'John',
-                                                        'last_name': 'Smith'})
-        self.dest_contact = self.create_contact(data={'first_name': 'John',
-                                                      'last_name': 'Smith'})
-        self.backend = self.create_backend(data={'name': 'mockbackend'})
-        self.unreg_conn = self.create_connection({'backend': self.backend})
-        self.source_conn = self.create_connection({'contact': self.source_contact,
-                                                   'backend': self.backend,
-                                                   'identity': '5678'})
-        self.dest_conn = self.create_connection({'contact': self.dest_contact,
-                                                 'backend': self.backend,
-                                                 'identity': '1234'})
+        self.source_contact = self.create_contact()
+        self.dest_contact = self.create_contact()
+        self.backend = self.create_backend(name='mockbackend')
+        self.unreg_conn = self.create_connection(backend=self.backend)
+        self.source_conn = self.create_connection(contact=self.source_contact,
+                                                  backend=self.backend,
+                                                  identity='5678')
+        self.dest_conn = self.create_connection(contact=self.dest_contact,
+                                                backend=self.backend,
+                                                identity='1234')
         self.router = MockRouter()
         self.app = BroadcastApp(router=self.router)
-        self.rule = self.create_forwarding_rule(data={'keyword': 'abc'})
+        self.rule = self.create_forwarding_rule(keyword='abc')
         self.rule.source.contacts.add(self.source_contact)
 
     def _send(self, conn, text):
@@ -399,17 +387,16 @@ class BroadcastScriptedTest(BroadcastCreateDataTest):
 
     def test_entire_stack(self):
         contact = self.create_contact()
-        backend = self.create_backend(data={'name': 'mockbackend'})
-        connection = self.create_connection({'contact': contact,
-                                             'backend': backend})
+        backend = self.create_backend(name='mockbackend')
+        connection = self.create_connection(contact=contact, backend=backend)
         # ready broadcast
         g1 = self.create_group()
         contact.groups.add(g1)
-        b1 = self.create_broadcast(when='ready', data={'groups': [g1]})
+        b1 = self.create_broadcast(when='ready', groups=[g1])
         # non-ready broadcast
         g2 = self.create_group()
         contact.groups.add(g2)
-        b2 = self.create_broadcast(when='future', data={'groups': [g2]})
+        b2 = self.create_broadcast(when='future', groups=[g2])
         # run cronjob
         scheduler_callback()
         # one sent message (future broadcast isn't ready)
@@ -431,8 +418,8 @@ class ForwardingViewsTest(BroadcastCreateDataTest):
     def get_valid_data(self):
         data = {
             'keyword': self.random_string(length=25),
-            'source': self.create_group(data={'name': self.random_string(length=25)}).pk,
-            'dest': self.create_group(data={'name': self.random_string(length=25)}).pk,
+            'source': self.create_group(name=self.random_string(length=25)).pk,
+            'dest': self.create_group(name=self.random_string(length=25)).pk,
             'message': self.random_string(length=25),
         }
         return data
