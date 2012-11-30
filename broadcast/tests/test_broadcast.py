@@ -1,81 +1,20 @@
 #!/usr/bin/env python
 # vim: ai ts=4 sts=4 et sw=4 encoding=utf-8
-import logging
 import datetime
-from dateutil.relativedelta import relativedelta
 from dateutil import rrule
+from dateutil.relativedelta import relativedelta
 
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
-from rapidsms.tests.harness import MockRouter, MockBackend
 from rapidsms.messages.incoming import IncomingMessage
 from rapidsms.router import get_router
+from rapidsms.tests.harness import MockRouter, MockBackend
 
-from broadcast.tests.base import CreateDataTest
-from broadcast.models import Broadcast, DateAttribute, ForwardingRule
 from broadcast.app import BroadcastApp, scheduler_callback
 from broadcast.forms import BroadcastForm
-
-
-class BroadcastCreateDataTest(CreateDataTest):
-    """ Base test case that provides helper functions to create data """
-
-    def create_broadcast(self, when='', **kwargs):
-        date = datetime.datetime.now()
-        # simple helper flag to create broadcasts in the past or future
-        delta = relativedelta(days=1)
-        if when == 'ready':
-            date -= delta
-        elif when == 'future':
-            date += delta
-        defaults = {
-            'date': date,
-            'schedule_frequency': 'daily',
-            'body': self.random_string(140),
-        }
-        defaults.update(kwargs)
-        groups = defaults.pop('groups', [])
-        weekdays = defaults.pop('weekdays', [])
-        months = defaults.pop('months', [])
-        broadcast = Broadcast.objects.create(**defaults)
-        if groups:
-            broadcast.groups = groups
-        if weekdays:
-            broadcast.weekdays = weekdays
-        if months:
-            broadcast.months = months
-        return broadcast
-
-    def create_forwarding_rule(self, **kwargs):
-        defaults = {
-            'keyword': self.random_string(length=25),
-            'source': self.create_group(name=self.random_string(length=25)),
-            'dest': self.create_group(name=self.random_string(length=25)),
-            'message': self.random_string(length=25),
-        }
-        defaults.update(kwargs)
-        return ForwardingRule.objects.create(**defaults)
-
-    def get_weekday(self, day):
-        return DateAttribute.objects.get(name__iexact=day,
-                                         type__exact='weekday')
-
-    def get_weekday_for_date(self, date):
-        return DateAttribute.objects.get(value=date.weekday(),
-                                         type__exact='weekday')
-
-    def get_month(self, day):
-        return DateAttribute.objects.get(name__iexact=day, type__exact='month')
-
-    def get_month_for_date(self, date):
-        return DateAttribute.objects.get(value=date.month, type__exact='month')
-
-    def assertDateEqual(self, date1, date2):
-        """ date comparison that ignores microseconds """
-        date1 = date1.replace(microsecond=0)
-        date2 = date2.replace(microsecond=0)
-        self.assertEqual(date1, date2)
+from broadcast.models import Broadcast, ForwardingRule
+from broadcast.tests.base import BroadcastCreateDataTest
 
 
 class DateAttributeTest(BroadcastCreateDataTest):
@@ -95,7 +34,7 @@ class DateAttributeTest(BroadcastCreateDataTest):
 class BroadcastDateTest(BroadcastCreateDataTest):
 
     def test_get_next_date_future(self):
-        """ get_next_date shouln't increment if date is in the future """
+        """ get_next_date shouldn't increment if date is in the future """
         date = datetime.datetime.now() + relativedelta(hours=1)
         broadcast = self.create_broadcast(date=date)
         self.assertEqual(broadcast.get_next_date(), date)
