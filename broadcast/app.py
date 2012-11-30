@@ -36,7 +36,7 @@ def queue_outgoing_messages():
     """ Generate queued messages for scheduled broadcasts. """
     broadcasts = Broadcast.ready.all()
     logger.info('Found {0} ready broadcast(s)'.format(broadcasts.count()))
-    for broadcast in Broadcast.ready.all():
+    for broadcast in broadcasts:
         # TODO: make sure this process is atomic
         count = broadcast.queue_outgoing_messages()
         logger.debug('Queued {0} broadcast message(s)'.format(count))
