@@ -49,11 +49,12 @@ Add broadcast URLs to your urlconf::
     )
 
 Optionally, add a link to broadcast in your ``RAPIDSMS_TABS`` setting::
+
     RAPIDSMS_TABS += [
         ('broadcast.views.send_message', 'Send Broadcast'),
     ]
 
-Run syncdb or migrate::
+Finally, run syncdb or migrate::
 
     python manage.py migrate broadcast
 
