@@ -36,7 +36,7 @@ middleware::
 
 Configure django_sorter::
 
-    SORTER_ALLOWED_CRITERA = {
+    SORTER_ALLOWED_CRITERIA = {
         'sort_rules': ['id', 'keyword', 'source', 'dest', 'message', 'rule_type', 'label'],
         'sort_broadcasts': ['id', 'date', 'schedule_frequency', 'body'],
         'sort_messages': ['broadcast__id', 'broadcast__body', 'date_created', 'status', 'recipient', 'date_sent'],
