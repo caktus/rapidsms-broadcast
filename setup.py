@@ -5,6 +5,7 @@ required_packages = [
     'django>=1.3',
     'django-pagination==1.0.7',
     'django-sorter==0.2',
+    'python-dateutil==2.2',
 ]
 
 def read_file(filename):
