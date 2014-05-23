@@ -51,7 +51,7 @@ def send_queued_messages():
     for message in messages:
         connection = message.recipient.default_connection
         try:
-            msg = send(message.broadcast.body, connection)[0]
+            msg = send(message.broadcast.body, connection)
         except Exception, e:
             msg = None
             logger.exception(e)
@@ -112,17 +112,19 @@ class BroadcastApp(AppBase):
             self.debug(u'{0} keyword not found in rules'.format(keyword))
             return False
         rule = rules[keyword]
-        contact = msg.connection.contact
+        # XXX msg.connections is an object rather than a list; not sure why
+        contact = msg.connections.contact
         if not contact or \
-          not rule.source.contacts.filter(pk=contact.pk).exists():
+          not rule.source.group_contacts.filter(pk=contact.pk).exists():
             msg.respond(self.not_registered)
             return True
         now = get_now()
         msg_text = [rule.message, u' '.join(msg_parts[1:])]
         msg_text = [m for m in msg_text if m]
         msg_text = u' '.join(msg_text)
+        # XXX msg.connections is an object rather than a list; not sure why
         full_msg = u'From {name} ({number}): {body}'\
-                   .format(name=contact.name, number=msg.connection.identity,
+                   .format(name=contact.name, number=msg.connections.identity,
                            body=msg_text)
         broadcast = Broadcast.objects.create(date_created=now, date=now,
                                              schedule_frequency='one-time',

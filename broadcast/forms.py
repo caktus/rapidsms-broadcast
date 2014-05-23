@@ -5,6 +5,7 @@ import datetime
 from django import forms
 from django.forms.models import modelformset_factory
 from django.utils.dates import MONTHS
+from django.utils import timezone
 
 from broadcast.models import Broadcast, ForwardingRule
 from groups.models import Group
@@ -66,7 +67,7 @@ class BroadcastForm(forms.ModelForm):
     def save(self, commit=True):
         broadcast = super(BroadcastForm, self).save(commit=False)
         if self.cleaned_data['when'] == 'now':
-            broadcast.date = datetime.datetime.now()
+            broadcast.date = timezone.now()
         if commit:
             broadcast.save()
             # pylint: disable=E1101

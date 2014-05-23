@@ -9,12 +9,13 @@ import string
 from django.core.management import call_command
 from django.db import DEFAULT_DB_ALIAS
 from django.test import TestCase
+from django.utils import timezone
 
 from rapidsms.models import Connection, Contact, Backend
 from rapidsms.router import get_router
 from rapidsms.tests.harness import MockBackend
 
-from groups.models import Group
+from groups.models import GroupContact, Group
 
 from broadcast.models import ForwardingRule, DateAttribute, Broadcast
 
@@ -49,10 +50,12 @@ class CreateDataTest(TestCase):
 
     def create_contact(self, **kwargs):
         defaults = {
-            'name': self.random_string(12),
+            'first_name': self.random_string(6),
+            'last_name': self.random_string(6),
+            'contact': Contact.objects.create(),
         }
         defaults.update(kwargs)
-        return Contact.objects.create(**defaults)
+        return GroupContact.objects.create(**defaults)
 
     def create_connection(self, **kwargs):
         defaults = {
@@ -74,9 +77,11 @@ class CreateDataTest(TestCase):
 class BroadcastCreateDataTest(CreateDataTest):
     """ Base test case that provides helper functions for Broadcast data """
 
+    fixtures = ['initial_data.json']
+
     def create_broadcast(self, when='', groups=None, weekdays=None,
             months=None, **kwargs):
-        date = datetime.datetime.now()
+        date = timezone.now()
         if when == 'ready':  # broadcast is in the past
             date -= relativedelta(days=1)
         elif when == 'future':  # broadcast is in the future

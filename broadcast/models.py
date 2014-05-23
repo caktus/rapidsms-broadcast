@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # vim: ai ts=4 sts=4 et sw=4 encoding=utf-8
 from dateutil import rrule
+import datetime
 import logging
 
 from django.db import models
@@ -163,7 +164,7 @@ class Broadcast(models.Model):
 
     def queue_outgoing_messages(self):
         """ generate queued outgoing messages """
-        contacts = Contact.objects.distinct().filter(groups__broadcasts=self)
+        contacts = Contact.objects.distinct().filter(groupcontact__groups__broadcasts=self)
         for contact in contacts:
             self.messages.create(recipient=contact)
         return contacts.count()
