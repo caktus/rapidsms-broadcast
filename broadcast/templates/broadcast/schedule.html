@@ -31,8 +31,8 @@
             <td><span title='{{ broadcast.body }}'>{{ broadcast.body|truncatewords:2 }}</span></td>
             <td>{{ broadcast.groups.all|join:", "|truncatewords:3 }} ({{ broadcast.recipients }})</td>
             <td class='actions'>
-                <a class='button' title='Edit broadcast #{{ broadcast.pk }}' href='{% url edit-broadcast broadcast.pk %}'><span class='ui-icon ui-icon-pencil'></span></a>
-                <a class='button' title='Delete broadcast #{{ broadcast.pk }}' href='{% url delete-broadcast broadcast.pk %}'><span class='ui-icon ui-icon-closethick'></span></a>
+                <a class='button' title='Edit broadcast #{{ broadcast.pk }}' href='{% url "edit-broadcast" broadcast.pk %}'><span class='ui-icon ui-icon-pencil'></span></a>
+                <a class='button' title='Delete broadcast #{{ broadcast.pk }}' href='{% url "delete-broadcast" broadcast.pk %}'><span class='ui-icon ui-icon-closethick'></span></a>
             </td>
         </tr>
         {% empty %}

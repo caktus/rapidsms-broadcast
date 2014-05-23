@@ -18,7 +18,7 @@
 
 <div class="module">
     <h2>Forwarding Rules</h2>
-    <p><a class='button add' title='Add Forwarding Rule' href="{% url broadcast-forwarding-create %}" >Add forwarding rule...</a></p>
+    <p><a class='button add' title='Add Forwarding Rule' href="{% url "broadcast-forwarding-create" %}" >Add forwarding rule...</a></p>
     <table id='rules' class="pagination sortable">
         <thead>
             <tr>
@@ -42,8 +42,8 @@
             <td>{{ rule.rule_type }}</td>
             <td>{{ rule.label }}</td>
             <td class='actions'>
-                <a class='button' title='Edit rule #{{ rule.pk }}' href='{% url broadcast-forwarding-edit rule.pk %}'><span class='ui-icon ui-icon-pencil'></span></a>
-                <a class='button' title='Delete rule #{{ rule.pk }}' href='{% url broadcast-forwarding-delete rule.pk %}'><span class='ui-icon ui-icon-closethick'></span></a>
+                <a class='button' title='Edit rule #{{ rule.pk }}' href='{% url "broadcast-forwarding-edit" rule.pk %}'><span class='ui-icon ui-icon-pencil'></span></a>
+                <a class='button' title='Delete rule #{{ rule.pk }}' href='{% url "broadcast-forwarding-delete" rule.pk %}'><span class='ui-icon ui-icon-closethick'></span></a>
             </td>
         </tr>
         {% empty %}

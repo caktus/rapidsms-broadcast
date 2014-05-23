@@ -42,5 +42,5 @@
         <li>Total Messages: {{ total_messages }}</li>
     </ul>
 </div>
-<div id='usage-chart' style="width: 900px; height: 240px;" data-url="{% url broadcast-usage-graph-data %}{% if request.META.QUERY_STRING %}?{{ request.META.QUERY_STRING }}{% endif %}"></div>
+<div id='usage-chart' style="width: 900px; height: 240px;" data-url="{% url "broadcast-usage-graph-data" %}{% if request.META.QUERY_STRING %}?{{ request.META.QUERY_STRING }}{% endif %}"></div>
 {% endblock %}
