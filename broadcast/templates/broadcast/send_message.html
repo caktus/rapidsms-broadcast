@@ -1,4 +1,5 @@
 {% extends "broadcast/base.html" %}
+{% load url from future %}
 
 {% block title %}{% if form.instance.pk %}Edit Broadcast{% else %}Send a Message{% endif %}{% endblock %}
 
